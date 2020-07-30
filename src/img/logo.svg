@@ -1,18 +1,18 @@
-<svg width="330" height="101" xmlns="http://www.w3.org/2000/svg">
+<svg width="288" height="110" xmlns="http://www.w3.org/2000/svg">
  <!-- Created with Method Draw - http://github.com/duopixel/Method-Draw/ -->
 
  <g>
   <title>background</title>
-  <rect fill="#fff" id="canvas_background" height="103" width="332" y="-1" x="-1"/>
-  <g display="none" overflow="visible" y="0" x="0" height="100%" width="100%" id="canvasGrid">
-   <rect fill="url(#gridpattern)" stroke-width="0" y="0" x="0" height="100%" width="100%"/>
+  <rect fill="none" x="-1" y="-1" width="290" height="112" id="canvas_background"/>
+  <g id="canvasGrid" display="none">
+   <rect id="svg_1" width="337" height="101" x="3" y="3" stroke-width="0" fill="url(#gridpattern)"/>
   </g>
  </g>
  <g>
   <title>Layer 1</title>
-  <ellipse ry="43" rx="42.812427" id="svg_2" cy="51.240232" cx="52.591799" stroke-width="1.5" stroke="#BBBBBB" fill="#BBBBBB"/>
-  <ellipse ry="43" rx="42.812427" id="svg_3" cy="51" cx="202.999878" stroke-width="1.5" stroke="#fff" fill="#BBBBBB"/>
-  <rect stroke="#BBBBBB" id="svg_4" height="85.983202" width="43.958259" y="7.787229" x="104.687606" stroke-width="1.5" fill="#BBBBBB"/>
-  <path id="svg_11" d="m277.477821,10.432675c20.969707,-1.927273 21.575771,-2.218181 39.818204,-3.963636c-7.57576,27.51516 -18.787885,62.484868 -27.090918,87.636391c-18.000009,0 -22.181832,0 -40.181841,0c8.727276,-20.981825 22.181826,-64.145476 27.454555,-83.672755z" stroke-width="1.5" stroke="#fff" fill="#DDDDDD"/>
+  <ellipse fill="#c6c6c6" stroke="#c6c6c6" stroke-width="1.5" cx="70.607142" cy="53.053571" id="svg_2" rx="25" ry="25"/>
+  <ellipse fill="#c6c6c6" stroke="#c6c6c6" stroke-width="1.5" cx="171.500003" cy="53.499998" id="svg_3" rx="25" ry="25"/>
+  <rect fill="#c6c6c6" stroke-width="1.5" x="107.687606" y="32.000001" width="23" height="43" id="svg_4" stroke="#c6c6c6"/>
+  <path stroke="#c6c6c6" fill="#c6c6c6" stroke-width="1.5" d="m219.741582,29.265908c11.585981,-0.311626 11.648426,-0.280962 21.82282,-0.685291c-4.71881,15.348542 -11.230325,35.185912 -16.326728,49.838772c-10.526782,0 -11.577171,0 -21.522362,0c3.949526,-11.782696 12.531443,-37.898669 16.02627,-49.15348z" id="svg_11"/>
  </g>
 </svg>

@@ -11,15 +11,17 @@ class InputLabel extends React.PureComponent {
 
   }
   render() {
-    const { title, type, required } = this.props;
+    const { title, type, required, name, onChange, value, error } = this.props;
+    const titleClass = `label__head-title ${error ? 'errorText' : null}`;
+    const inputClass = `label__input-input ${error ? 'errorInput' : null}`;
     return (
       <label className="inputs__label">
         <div className="label__head">
-            <span className="label__head-title">{title}</span>
+            <span className={titleClass}>{title}</span>
             {required ? null : <span className="label__head-optional">Опционально</span>}
         </div>
         <div className="label__input">
-          <input className="label__input-input" type={type} required={required}></input>
+          <input className={inputClass} type={type} value={value} name={name} onChange={onChange}></input>
         </div>
       </label>
     );
