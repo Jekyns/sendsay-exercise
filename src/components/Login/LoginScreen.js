@@ -1,15 +1,12 @@
 import React from 'react';
+import cookie from 'react-cookies';
+import Sendsay from 'sendsay-api';
+import { connect } from 'react-redux';
 import InputLabel from './InputLabel';
 import './style.css';
-import logo from '../../img/logo.svg'
-import Sendsay from 'sendsay-api';
-import Spinner from '../../img/icons/Spinner.gif'
+import logo from '../../img/logo.svg';
+import Spinner from '../../img/icons/Spinner.gif';
 import { setUser, deleteUser } from '../../store/user/actions';
-import { connect } from 'react-redux';
-import cookie from 'react-cookies'
-
-
-
 
 class LoginScreen extends React.PureComponent {
   state = {
@@ -22,14 +19,13 @@ class LoginScreen extends React.PureComponent {
     submittingForm: false,
   };
 
-  componentDidMount() {
-  }
+  // componentDidMount() {}
 
   validateField = (regex, str) => {
     if (!str) return true;
     const checkStr = regex.exec(str);
-    if (!checkStr) return false
-    return checkStr[0].length == str.length;
+    if (!checkStr) return false;
+    return checkStr[0].length === str.length;
   }
 
   onChange = (e) => {
@@ -56,40 +52,39 @@ class LoginScreen extends React.PureComponent {
     e.preventDefault();
     const { login, sublogin, password } = this.state;
     if (!login) {
-      this.setState({ loginError: true })
+      this.setState({ loginError: true });
     }
     if (!password) {
-      this.setState({ passwordError: true })
+      this.setState({ passwordError: true });
     }
     if (login && password) {
-      this.setState({ submittingForm: true, errorMessage: '' })
-      let sendsay = new Sendsay();
+      this.setState({ submittingForm: true, errorMessage: '' });
+      const sendsay = new Sendsay();
       sendsay.request({
         action: 'login',
         login,
         passwd: password,
       }).then((res) => {
-        let user = {
-          login: this.state.login,
-          sublogin: this.state.sublogin,
+        const user = {
+          login,
+          sublogin,
           session: res.session,
-        }
+        };
         cookie.save('sendsay_session', user.session);
         cookie.save('login', user.login);
         cookie.save('sublogin', user.sublogin);
         this.props.setUser({ ...user });
-        this.setState({ submittingForm: false })
+        this.setState({ submittingForm: false });
       }).catch((err) => {
         delete err.request;
         this.setState({
           errorMessage: JSON.stringify(err),
           submittingForm: false,
           password: '',
-        })
-      })
+        });
+      });
     }
   }
-
 
   render() {
     const spanButtonClass = `submit__btn-span ${this.state.submittingForm ? 'hide-text' : null}`;
@@ -137,6 +132,7 @@ class LoginScreen extends React.PureComponent {
                 <span className={spanButtonClass}>Войти</span>
                 <img className={loaderButtonClass} src={Spinner} />
               </button>
+
             </div>
           </form>
         </div>
@@ -147,7 +143,6 @@ class LoginScreen extends React.PureComponent {
     );
   }
 }
-
 
 const mapStateToProps = (state) => {
   return {
@@ -166,4 +161,3 @@ const enchancer = connect(
 );
 
 export default enchancer(LoginScreen);
-
