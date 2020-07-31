@@ -4,6 +4,9 @@ import './style.css';
 import logo from '../../img/logo.svg'
 import Sendsay from 'sendsay-api';
 import Spinner from '../../img/icons/Spinner.gif'
+import { setUser, deleteUser } from '../../store/user/actions';
+import { connect } from 'react-redux';
+import cookie from 'react-cookies'
 
 
 
@@ -20,7 +23,6 @@ class LoginScreen extends React.PureComponent {
   };
 
   componentDidMount() {
-
   }
 
   validateField = (regex, str) => {
@@ -67,11 +69,23 @@ class LoginScreen extends React.PureComponent {
         login,
         passwd: password,
       }).then((res) => {
-        document.cookie = `sendsay_session=${res.session}`;
+        let user = {
+          login: this.state.login,
+          sublogin: this.state.sublogin,
+          session: res.session,
+        }
+        cookie.save('sendsay_session', user.session);
+        cookie.save('login', user.login);
+        cookie.save('sublogin', user.sublogin);
+        this.props.setUser({ ...user });
         this.setState({ submittingForm: false })
       }).catch((err) => {
         delete err.request;
-        this.setState({ errorMessage: JSON.stringify(err), submittingForm: false, password:'', })
+        this.setState({
+          errorMessage: JSON.stringify(err),
+          submittingForm: false,
+          password: '',
+        })
       })
     }
   }
@@ -134,4 +148,22 @@ class LoginScreen extends React.PureComponent {
   }
 }
 
-export default LoginScreen;
+
+const mapStateToProps = (state) => {
+  return {
+    user: state.userStore.user,
+  };
+};
+
+const mapDispatchToProps = {
+  setUser,
+  deleteUser,
+};
+
+const enchancer = connect(
+  mapStateToProps,
+  mapDispatchToProps,
+);
+
+export default enchancer(LoginScreen);
+
