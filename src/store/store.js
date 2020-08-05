@@ -1,6 +1,6 @@
-import { createStore, applyMiddleware  } from 'redux';
+import { createStore } from 'redux';
+import { devToolsEnhancer } from 'redux-devtools-extension';
 import reducer from './reducers';
-import { devToolsEnhancer  } from 'redux-devtools-extension';
 
 export default createStore(
   reducer,

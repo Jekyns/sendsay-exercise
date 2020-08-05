@@ -4,11 +4,10 @@ const initialState = {
   user: {
     login: '',
     sublogin: '',
-    session: '',
   },
 };
 
-const deleteUser = (state, action) => {
+const deleteUser = (state) => {
   const newUser = initialState;
   return {
     ...state,
