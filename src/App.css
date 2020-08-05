@@ -1,5 +1,6 @@
 .App {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Open Sans", "Helvetica Neue", sans-serif
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Open Sans", "Helvetica Neue", sans-serif;
+  height: 100vh;
 }
 
 .App-logo {
@@ -28,11 +29,182 @@
   color: #61dafb;
 }
 
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 15px;
+  font-size: 16px;
+  color: #0D0D0D;
+  border-bottom: 1px solid;
+  border-color: rgba(0, 0, 0, 0.2);
+}
+
+.header__left-logo {
+  height: 37px;
+  width: 165px;
+  position: relative;
+}
+
+object.header__logo-svg {
+  height: 75px;
+  width: 165px;
+  position: absolute;
+  /* top: -37px; */
+  top: -100%;
+  right: 0;
+}
+
+.header__left {
+  display: flex;
+  align-items: center;
+}
+.header__right {
+  display: flex;
+  align-items: baseline;
+}
+.header__right-login {
+  position: relative;
+}
+
+
+span.user-item.header__right-sublogin {
+  position: relative;
+  margin-left: 15px;
+}
+
+.header__right-sublogin::after {
+  position: absolute;
+  content: "";
+  left: -10px;
+  top:35%;
+  width: 2px;
+  height: 2px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 100%;
+}
+
+.logout-span {
+  font-size: 16px;
+  margin-right: 10px;
+}
+
+.logout-img {
+  width: 18px;
+  height: 18px;
+}
+
+button.logout {
+  background: none;
+  border: none;
+  display: flex;
+  padding: 10px;
+}
+
+button.logout:hover {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.header__right-user {
+  padding: 3px 10px;
+  border: 1px solid;
+  border-radius: 5px;
+  border-color: rgba(0, 0, 0, 0.2);
+}
+
+.header__right-item {
+  margin-right: 20px;
+  align-self: baseline;
+}
+
+.header__left-span {
+  font-size: 20px;
+}
+
+
+.header__right-item:last-child {
+  margin-right: 0;
+}
+
+.header__right-sublogin::before {
+  position: absolute;
+  content: "";
+  left: -10px;
+  top:70%;
+  width: 2px;
+  height: 2px;
+  border-radius: 100%;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.right__fullscreen-button {
+  background: none;
+  border:none;
+
+}
+.right__fullscreen-button:hover {
+  background: none;
+  border:none;
+  cursor: pointer;
+}
+.right__fullscreen-icon {
+  width: 16px;
+  height: 16px;
+}
+
+.right__fullscreen {
+  align-self: center;
+}
+
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);
   }
   to {
     transform: rotate(360deg);
+  }
+}
+
+.App__logo {
+  display: flex;
+  width: 516px;
+  justify-content: space-between;
+  position: absolute;
+  left: calc(50% - 200px);
+  top: calc(50% - 50px);
+  transition: transform 5s;
+}
+
+.App__logo-circle {
+  width: 120px;
+  height: 120px;
+  background: #c5c5c5;
+  border-radius: 100%;
+}
+
+.App__logo-square {
+  width: 50px;
+  height: 120px;
+  background: #c5c5c5;
+  transform: rotateZ(0deg);
+}
+
+svg.App__logo-parallelogram {
+  transform: rotateZ(0deg);
+}
+
+.App__logo-animation {
+  transform: rotateZ(2520deg);
+}
+
+@media(max-width: 700px){
+  .header__right-item {
+    margin-right: 5px;
+  }
+  .header__left-logo {
+    display: none;
   }
 }
