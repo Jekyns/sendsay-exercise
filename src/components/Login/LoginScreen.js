@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import cookie from 'react-cookies';
 import Sendsay from 'sendsay-api';
 import { connect } from 'react-redux';
@@ -6,7 +7,7 @@ import InputLabel from './InputLabel';
 import './style.css';
 import logo from '../../img/logo.svg';
 import Spinner from '../../img/icons/Spinner.gif';
-import { setUser, deleteUser } from '../../store/user/actions';
+import { setUser } from '../../store/user/actions';
 
 class LoginScreen extends React.PureComponent {
   state = {
@@ -18,8 +19,6 @@ class LoginScreen extends React.PureComponent {
     passwordError: false,
     submittingForm: false,
   };
-
-  // componentDidMount() {}
 
   validateField = (regex, str) => {
     if (!str) return true;
@@ -63,22 +62,22 @@ class LoginScreen extends React.PureComponent {
       sendsay.request({
         action: 'login',
         login,
+        sublogin,
         passwd: password,
       }).then((res) => {
         const user = {
-          login,
-          sublogin,
+          login: res.login,
+          sublogin: res.sublogin,
           session: res.session,
         };
         cookie.save('sendsay_session', user.session);
-        cookie.save('login', user.login);
-        cookie.save('sublogin', user.sublogin);
         this.props.setUser({ ...user });
         this.setState({ submittingForm: false });
       }).catch((err) => {
-        delete err.request;
+        const customErr = { ...err };
+        delete customErr.request;
         this.setState({
-          errorMessage: JSON.stringify(err),
+          errorMessage: JSON.stringify(customErr),
           submittingForm: false,
           password: '',
         });
@@ -87,18 +86,27 @@ class LoginScreen extends React.PureComponent {
   }
 
   render() {
-    const spanButtonClass = `submit__btn-span ${this.state.submittingForm ? 'hide-text' : null}`;
-    const loaderButtonClass = `submit__btn-loader ${this.state.submittingForm ? 'show-loader' : null}`;
-    const errorBoxClass = `head__error ${this.state.errorMessage ? 'show-error' : null}`;
+    const {
+      submittingForm,
+      errorMessage,
+      loginError,
+      sublogin,
+      passwordError,
+      login,
+      password
+    } = this.state;
+    const spanButtonClass = `submit__btn-span ${submittingForm ? 'hide-text' : null}`;
+    const loaderButtonClass = `submit__btn-loader ${submittingForm ? 'show-loader' : null}`;
+    const errorBoxClass = `head__error ${errorMessage ? 'show-error' : null}`;
     return (
-      <div className="handler">
+      <div className="wrapper login-wrapper">
         <object
-          className="handler__logo-svg"
+          className="wrapper__logo-svg"
           type="image/svg+xml"
           data={logo}>
         </object>
-        <div className="handler__login">
-          <form className="handler__login-form" onSubmit={this.onSubmit}>
+        <div className="wrapper__login">
+          <form className="wrapper__login-form" onSubmit={this.onSubmit}>
             <div className="form__head">
               <div className="head__title">
                 <h1 className="head__title-h1">API-консолька</h1>
@@ -117,47 +125,43 @@ class LoginScreen extends React.PureComponent {
                 </div>
                 <div className="error__message">
                   <span className="error__message-span">
-                    {this.state.errorMessage}
+                    {errorMessage}
                   </span>
                 </div>
               </div>
             </div>
             <div className="form__inputs">
-              <InputLabel onChange={this.onChange} error={this.state.loginError} value={this.state.login} name="login" title="Логин" required />
-              <InputLabel onChange={this.onChange} value={this.state.sublogin} name="sublogin" title="Сублогин" />
-              <InputLabel onChange={this.onChange} error={this.state.passwordError} value={this.state.password} name="password" title="Пароль" type="password" required />
+              <InputLabel onChange={this.onChange} error={loginError} value={login} name="login" title="Логин" required />
+              <InputLabel onChange={this.onChange} value={sublogin} name="sublogin" title="Сублогин" />
+              <InputLabel onChange={this.onChange} error={passwordError} value={password} name="password" title="Пароль" type="password" required />
             </div>
             <div className="form__submit">
               <button type="submit" className="form__submit-btn">
                 <span className={spanButtonClass}>Войти</span>
-                <img className={loaderButtonClass} src={Spinner} />
+                <img alt="spinner" className={loaderButtonClass} src={Spinner} />
               </button>
-
             </div>
           </form>
         </div>
-        <div className="handler__link">
-          <a href="https://github.com/Jekyns/sendsay-exercise" className="handler__link-a">@Jekyns</a>
+        <div className="wrapper__link">
+          <a href="https://github.com/Jekyns/sendsay-exercise" className="wrapper__link-a">@Jekyns</a>
         </div>
       </div>
     );
   }
 }
 
-const mapStateToProps = (state) => {
-  return {
-    user: state.userStore.user,
-  };
-};
-
 const mapDispatchToProps = {
   setUser,
-  deleteUser,
 };
 
 const enchancer = connect(
-  mapStateToProps,
+  undefined,
   mapDispatchToProps,
 );
 
 export default enchancer(LoginScreen);
+
+LoginScreen.propTypes = {
+  setUser: PropTypes.func.isRequired,
+};
