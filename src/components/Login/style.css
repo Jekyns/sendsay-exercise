@@ -1,4 +1,4 @@
-.handler {
+.wrapper {
   width: 100%;
   height: 100%;
   background: #f7f7f7;
@@ -6,14 +6,20 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
+  overflow-x: hidden;
+  min-width: 640px;
 }
 
-.handler__logo-svg {
+.login-wrapper {
+  min-width: auto;
+}
+
+.wrapper__logo-svg {
   margin: 20px auto;
   padding-left: 20px;
 }
 
-.handler__login {
+.wrapper__login {
   transition: width 0.2s;
   box-shadow: 0 0 10px rgb(0 0 0 / 10%);
   width: 20%;
@@ -93,7 +99,7 @@ h1.form__head-h1 {
   background: linear-gradient(#3b8cd9, #0149d5);
 }
 
-.handler__link {
+.wrapper__link {
   margin: 20px auto;
 }
 
@@ -215,13 +221,16 @@ h1.form__head-h1 {
   margin-bottom: 20px;
   max-height: 500px;
 }
+a.wrapper__link-a {
+  color: #999999;
+}
 @media(max-width: 1366px) {
-  .handler__login {
+  .wrapper__login {
     width: 30%;
   }
 }
 @media(max-width: 800px) {
-  .handler__login {
+  .wrapper__login {
     width: 55%;
   }
 }
