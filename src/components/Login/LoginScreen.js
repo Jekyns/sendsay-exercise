@@ -143,9 +143,10 @@ class LoginScreen extends React.PureComponent {
             </div>
           </form>
         </div>
-        <div className="wrapper__link">
-          <a href="https://github.com/Jekyns/sendsay-exercise" className="wrapper__link-a">@Jekyns</a>
-        </div>
+        <a href="https://github.com/Jekyns/sendsay-exercise" className="wrapper__link">
+          <span href="https://github.com/Jekyns/sendsay-exercise" className="wrapper__link-visible">@Jekyns</span>
+          <span className="wrapper__link-typing">/sendsay-exercise</span>
+        </a>
       </div>
     );
   }

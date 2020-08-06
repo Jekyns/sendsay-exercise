@@ -9,9 +9,10 @@ function RequestTab(props) {
       <div className="footer__submit">
         <button className="footer__submit-button" onClick={() => { onSubmit(); }}>Отправить</button>
       </div>
-      <div className="footer_github">
-        <a href="" className="footer__github-a">@Jekyns</a>
-      </div>
+      <a href="https://github.com/Jekyns/sendsay-exercise" className="wrapper__link">
+          <span href="https://github.com/Jekyns/sendsay-exercise" className="wrapper__link-visible">@Jekyns</span>
+          <span className="wrapper__link-typing">/sendsay-exercise</span>
+        </a>
       <div className="footer__beautify" onClick={formatRequestText}>
         <button className="footer__beautify-button">
           <div className="beautify__button">
