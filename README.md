@@ -1,4 +1,4 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This project was deployed on [Github pages](https://jekyns.github.io/).
 
 ## Available Scripts
 
