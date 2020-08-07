@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import './style.css';
 
-function RequestTab(props) {
+function RequestArea(props) {
   const {
     title,
     width,
@@ -27,9 +27,9 @@ function RequestTab(props) {
   );
 }
 
-export default RequestTab;
+export default RequestArea;
 
-RequestTab.propTypes = {
+RequestArea.propTypes = {
   title: PropTypes.string.isRequired,
   name: PropTypes.string,
   width: PropTypes.string,
@@ -41,7 +41,7 @@ RequestTab.propTypes = {
   savePosition: PropTypes.func,
 };
 
-RequestTab.defaultProps = {
+RequestArea.defaultProps = {
   title: 'Title',
   error: false,
 };
