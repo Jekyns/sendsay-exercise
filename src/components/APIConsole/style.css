@@ -122,6 +122,9 @@
 .tab__title {
   max-width: 200px;
   position: relative;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
 }
 
 .history::after {
