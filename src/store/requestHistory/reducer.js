@@ -11,14 +11,8 @@ const saveHistory = (history) => {
 
 const addRequest = (state, action) => {
   if (!action.request.actionName) {
-    const newAction = { ...action };
-    newAction.request.actionName = action.request.requestJson;
-    const newHistory = state.requests;
-    newHistory.unshift(action.request);
-    saveHistory(newHistory);
-    return { requests: newHistory };
+    action.request.actionName =  action.request.requestJson;
   }
-
   const newHistory = state.requests.filter((request) => {
     if (request.actionName === action.request.actionName) {
       return false;
