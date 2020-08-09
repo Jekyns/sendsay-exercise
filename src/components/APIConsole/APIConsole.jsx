@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import Sendsay from 'sendsay-api';
 import { connect } from 'react-redux';
@@ -11,25 +11,20 @@ import Footer from './Footer';
 import { addRequest, deleteRequest, setHistory } from '../../store/requestHistory/actions';
 import './style.css';
 
-class APIConsole extends React.PureComponent {
-  constructor(props) {
-    super(props);
-    this.fullscreenRef = React.createRef();
-  }
+function APIConsole(props) {
+  const fullscreenRef = React.createRef();
 
-  state = {
-    requestBoxWidth: 50,
-    responseBoxWidth: 50,
-    splitter: '',
-    startCursorPosition: 0,
-    clicked: false,
-    requestText: '',
-    responseText: '',
-    requestError: false,
-    responseError: false,
-  };
+  const [requestBoxWidth, setRequestBoxWidth] = React.useState(50);
+  const [responseBoxWidth, setResponseBoxWidth] = React.useState(50);
+  const [startCursorPosition, setStartCursorPosition] = React.useState(0);
+  const [clicked, setClicked] = React.useState(false);
+  const [requestText, setRequestText] = React.useState('');
+  const [responseText, setResponseText] = React.useState('');
+  const [requestError, setRequestError] = React.useState(false);
+  const [responseError, setResponseError] = React.useState(false);
+  const [fullscreen, setFullScreen] = React.useState(false);
 
-  IsJsonString = (str) => {
+  const IsJsonString = (str) => {
     try {
       JSON.parse(str);
     } catch (e) {
@@ -38,31 +33,27 @@ class APIConsole extends React.PureComponent {
     return true;
   }
 
-  componentDidMount() {
+  useEffect(() => {
     if (cookie.load('splitter-position')) {
       const splitterPosition = cookie.load('splitter-position');
-      this.setState({
-        requestBoxWidth: splitterPosition.requestBoxWidth,
-        responseBoxWidth: splitterPosition.responseBoxWidth
-      });
+      setRequestBoxWidth(splitterPosition.requestBoxWidth);
+      setResponseBoxWidth(splitterPosition.responseBoxWidth);
     }
+  }, [])
+
+  const onChange = (e) => {
+    const { value } = e.target;
+    setRequestText(value);
+    setRequestError(value.length > 0 ? !IsJsonString(value) : false);
   }
 
-  onChange = (e) => {
-    const { name, value } = e.target;
-    this.setState({
-      [name]: value,
-      requestError: value.length > 0 ? !this.IsJsonString(value) : false,
-    });
-  }
-
-  beautifyJson = (str) => {
+  const beautifyJson = (str) => {
     return JSON.stringify(JSON.parse(str), null, 2);
   }
 
-  onSubmit = async request => {
-    const { requestError, requestText } = this.state;
-    this.setState({ responseError: false });
+
+  const sendRequest = async request => {
+    setResponseError(false);
     if (requestError) {
       return null;
     }
@@ -73,87 +64,72 @@ class APIConsole extends React.PureComponent {
       session: cookie.load('sendsay_session'),
       ...requestJson,
     }).then((res) => {
-      this.props.addRequest({
+      props.addRequest({
         actionName: requestJson.action,
-        requestJson: this.beautifyJson(requestBody),
+        requestJson: beautifyJson(requestBody),
         success: true,
       });
-      this.setState({
-        requestText: requestBody,
-        responseText: this.beautifyJson(JSON.stringify(res))
-      });
+      setRequestText(requestBody);
+      setResponseText(beautifyJson(JSON.stringify(res)));
     }).catch((err) => {
-      this.props.addRequest({
+      props.addRequest({
         actionName: requestJson.action,
-        requestJson: this.beautifyJson(requestBody),
+        requestJson: beautifyJson(requestBody),
         success: false,
       });
-      this.setState({
-        requestText: requestBody,
-        responseText: this.beautifyJson(JSON.stringify(err)),
-        responseError: true
-      });
+      setRequestText(requestBody);
+      setResponseText(beautifyJson(JSON.stringify(err)));
+      setResponseError(true);
     });
     return null;
   }
 
-  moveSplitter = (e) => {
-    const { startCursorPosition, requestBoxWidth, responseBoxWidth, clicked } = this.state;
+  const moveSplitter = (e) => {
     if (!clicked) {
       return false;
     }
     e.preventDefault();
     const newSplitterPosition = startCursorPosition - e.clientX;
-    this.setState({
-      requestBoxWidth: requestBoxWidth - newSplitterPosition / (window.innerWidth / 100),
-      responseBoxWidth: responseBoxWidth + newSplitterPosition / (window.innerWidth / 100),
-      startCursorPosition: e.clientX,
-    });
+    setRequestBoxWidth(requestBoxWidth - newSplitterPosition / (window.innerWidth / 100));
+    setResponseBoxWidth(responseBoxWidth + newSplitterPosition / (window.innerWidth / 100));
+    setStartCursorPosition(e.clientX);
     return true;
   }
 
-  setStartCursorPosition = (e) => {
-    this.setState({
-      startCursorPosition: e.clientX,
-      clicked: true,
-      isFullscreen: false,
-    });
+  const StartCursorMoving = (e) => {
+    setStartCursorPosition(e.clientX);
+    setClicked(true);
+    setFullScreen(false);
   }
 
-  onMouseUp = () => {
-    this.setState({
-      clicked: false,
-    });
-  }
-
-  toogleFullScreen = () => {
-    if (this.state.isFullscreen) {
+  const toogleFullScreen = () => {
+    if (fullscreen) {
       document.exitFullscreen();
     } else {
-      this.fullscreenRef.current.requestFullscreen();
+      fullscreenRef.current.requestFullscreen();
     }
   }
 
-  formatRequestText = () => {
-    this.setState({ requestText: this.beautifyJson(this.state.requestText) });
+  const formatRequestText = () => {
+    setRequestText(beautifyJson(requestText));
   }
 
-  tabExecute = (request) => {
-    this.onSubmit(request);
+  const tabExecute = (request) => {
+    sendRequest(request);
   }
 
-  tabDelete = (actionName) => {
-    const { deleteRequest } = this.props;
+  const tabDelete = (actionName) => {
+    const { deleteRequest } = props;
     deleteRequest(actionName);
   }
 
-  clearHistory = () => {
-    const { setHistory } = this.props;
+  const clearHistory = () => {
+    const { setHistory } = props;
     setHistory([]);
+    cookie.remove('history');
   }
 
-  savePosition = () => {
-    const { requestBoxWidth, responseBoxWidth } = this.state;
+  const savePosition = () => {
     const splitterPosition = {
       requestBoxWidth,
       responseBoxWidth,
@@ -167,64 +143,53 @@ class APIConsole extends React.PureComponent {
     );
   }
 
-  render() {
-    const { requests } = this.props;
-    const {
-      isFullscreen,
-      clicked,
-      requestError,
-      requestBoxWidth,
-      requestText,
-      responseError,
-      responseBoxWidth,
-      responseText
-    } = this.state;
+  const { requests } = props;
 
-    const splitterClass = {
-      width: clicked ? '25px' : '15px',
-    };
+  const splitterClass = {
+    width: clicked ? '25px' : '15px',
+  };
 
-    document.addEventListener('fullscreenchange', () => {
-      if (document.fullscreenElement) {
-        this.setState({ isFullscreen: true });
-      } else {
-        this.setState({ isFullscreen: false });
-      }
-    });
-    return (
-      <div className="wrapper" onMouseUp={this.onMouseUp} ref={this.fullscreenRef}>
-        <Header toogleFullScreen={this.toogleFullScreen} isFullscreen={isFullscreen} />
-        <RequestHistory
-          hide={requests.length <= 0}
-          tabExecute={this.tabExecute}
-          tabDelete={this.tabDelete}
-          clearHistory={this.clearHistory}
+  document.addEventListener('fullscreenchange', () => {
+    if (document.fullscreenElement) {
+      setFullScreen(true);
+    } else {
+      setFullScreen(false);
+    }
+  });
+
+  return (
+    <div className="wrapper" onMouseUp={() => { setClicked(false); }} ref={fullscreenRef}>
+      <Header toogleFullScreen={toogleFullScreen} isFullscreen={fullscreen} />
+      <RequestHistory
+        hide={requests.length <= 0}
+        tabExecute={tabExecute}
+        tabDelete={tabDelete}
+        clearHistory={clearHistory}
+      />
+      <div className="api">
+        <RequestArea
+          error={requestError}
+          title="Запрос"
+          width={requestBoxWidth}
+          moveSplitter={moveSplitter}
+          onChange={onChange}
+          text={requestText}
+          savePosition={savePosition}
+          name={'requestText'} />
+        <div className="api__splitter" onMouseDown={StartCursorMoving} onMouseUp={savePosition} style={splitterClass}></div>
+        <RequestArea
+          error={responseError}
+          title="Ответ"
+          width={responseBoxWidth}
+          moveSplitter={moveSplitter}
+          text={responseText}
+          savePosition={savePosition}
+          name={'responseText'}
         />
-        <div className="api">
-          <RequestArea
-            error={requestError}
-            title="Запрос"
-            width={requestBoxWidth}
-            moveSplitter={this.moveSplitter}
-            onChange={this.onChange}
-            text={requestText}
-            savePosition={this.savePosition}
-            name={'requestText'} />
-          <div className="api__splitter" onMouseDown={this.setStartCursorPosition} onMouseUp={this.savePosition} style={splitterClass}></div>
-          <RequestArea
-            error={responseError}
-            title="Ответ"
-            width={responseBoxWidth}
-            moveSplitter={this.moveSplitter}
-            text={responseText}
-            savePosition={this.savePosition}
-            name={'responseText'}
-          />
-        </div>
-        <Footer formatRequestText={this.formatRequestText} onSubmit={this.onSubmit} />
       </div>
-    );
-  }
+      <Footer formatRequestText={formatRequestText} onSubmit={sendRequest} />
+    </div>
+  );
 }
 
 const mapStateToProps = (state) => {
@@ -253,5 +218,5 @@ APIConsole.propTypes = {
   addRequest: PropTypes.func.isRequired,
   deleteRequest: PropTypes.func.isRequired,
   setHistory: PropTypes.func.isRequired,
-  requests: PropTypes.object,
+  requests: PropTypes.arrayOf(PropTypes.object),
 };

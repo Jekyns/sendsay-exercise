@@ -9,55 +9,56 @@ import logo from '../../img/logo.svg';
 import Spinner from '../../img/icons/Spinner.gif';
 import { setUser } from '../../store/user/actions';
 
-class LoginScreen extends React.PureComponent {
-  state = {
-    login: '',
-    sublogin: '',
-    password: '',
-    loginError: false,
-    errorMessage: '',
-    passwordError: false,
-    submittingForm: false,
-  };
-
-  validateField = (regex, str) => {
+function LoginScreen(props) {
+  const [login, setLogin] = React.useState('');
+  const [sublogin, setSublogin] = React.useState('');
+  const [password, setPassword] = React.useState('');
+  const [loginError, setLoginError] = React.useState(false);
+  const [errorMessage, setErrorMessage] = React.useState('');
+  const [passwordError, setPasswordError] = React.useState(false);
+  const [submittingForm, setSubmittingForm] = React.useState(false);
+  const validateField = (regex, str) => {
     if (!str) return true;
     const checkStr = regex.exec(str);
     if (!checkStr) return false;
     return checkStr[0].length === str.length;
   }
-
-  onChange = (e) => {
+  const onChange = (e) => {
     const { name, value } = e.target;
-
-    if (name === 'login') {
-      this.setState({
-        loginError: !this.validateField(/_*[a-z0-9A-Z]+_*[a-z0-9A-Z]*@*[a-zA-Z]*[.]*[a-z]*/g, value)
-      });
+    switch (name) {
+      case 'login':
+        setLogin(value);
+        setLoginError(!validateField(/_*[a-z0-9A-Z]+_*[a-z0-9A-Z]*@*[a-zA-Z]*[.]*[a-z]*/g, value));
+        break;
+      case 'sublogin':
+        setSublogin(value);
+        break;
+      case 'password':
+        setPassword(value);
+        setPasswordError(!validateField(/[^а-яА-Я]*/g, value));
+        break;
+      default:
+      break;
     }
-
-    if (name === 'password') {
-      this.setState({
-        passwordError: !this.validateField(/[^а-яА-Я]*/g, value)
-      });
-    }
-
-    this.setState({
-      [name]: value,
-    });
   }
 
-  onSubmit = async (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault();
-    const { login, sublogin, password } = this.state;
+    setErrorMessage('');
     if (!login) {
-      this.setState({ loginError: true });
+      setLoginError(true);
     }
     if (!password) {
-      this.setState({ passwordError: true });
+      setPasswordError(true);
+      return null;
     }
+    
+    if(loginError || passwordError){
+      return null;
+    }
+
     if (login && password) {
-      this.setState({ submittingForm: true, errorMessage: '' });
+      setSubmittingForm(true);
       const sendsay = new Sendsay();
       sendsay.request({
         action: 'login',
@@ -71,85 +72,71 @@ class LoginScreen extends React.PureComponent {
           session: res.session,
         };
         cookie.save('sendsay_session', user.session);
-        this.props.setUser({ ...user });
-        this.setState({ submittingForm: false });
+        props.setUser({ ...user });
+        setSubmittingForm(false);
       }).catch((err) => {
         const customErr = { ...err };
         delete customErr.request;
-        this.setState({
-          errorMessage: JSON.stringify(customErr),
-          submittingForm: false,
-          password: '',
-        });
+        setErrorMessage(JSON.stringify(customErr));
+        setSubmittingForm(false);
+        setPassword('');
       });
     }
   }
+  const spanButtonClass = `submit__btn-span ${submittingForm ? 'hide-text' : null}`;
+  const loaderButtonClass = `submit__btn-loader ${submittingForm ? 'show-loader' : null}`;
+  const errorBoxClass = `head__error ${errorMessage ? 'show-error' : null}`;
+  return (
+    <div className="wrapper login-wrapper">
+      <object
+        className="wrapper__logo-svg"
+        type="image/svg+xml"
+        data={logo}>
+      </object>
+      <div className="wrapper__login">
+        <form className="wrapper__login-form" onSubmit={onSubmit}>
+          <div className="form__head">
+            <div className="head__title">
+              <h1 className="head__title-h1">API-консолька</h1>
+            </div>
+            <div className={errorBoxClass}>
+              <div className="error__head">
+                <div className="error__head-face">
+                  <div className="head__face-eye left-eye"></div>
+                  <div className="head__face-eye right-eye"></div>
+                  <div className="head__face-mouth"></div>
+                </div>
 
-  render() {
-    const {
-      submittingForm,
-      errorMessage,
-      loginError,
-      sublogin,
-      passwordError,
-      login,
-      password
-    } = this.state;
-    const spanButtonClass = `submit__btn-span ${submittingForm ? 'hide-text' : null}`;
-    const loaderButtonClass = `submit__btn-loader ${submittingForm ? 'show-loader' : null}`;
-    const errorBoxClass = `head__error ${errorMessage ? 'show-error' : null}`;
-    return (
-      <div className="wrapper login-wrapper">
-        <object
-          className="wrapper__logo-svg"
-          type="image/svg+xml"
-          data={logo}>
-        </object>
-        <div className="wrapper__login">
-          <form className="wrapper__login-form" onSubmit={this.onSubmit}>
-            <div className="form__head">
-              <div className="head__title">
-                <h1 className="head__title-h1">API-консолька</h1>
+                <span className="error__head-span">
+                  Вход не вышел
+                  </span>
               </div>
-              <div className={errorBoxClass}>
-                <div className="error__head">
-                  <div className="error__head-face">
-                    <div className="head__face-eye left-eye"></div>
-                    <div className="head__face-eye right-eye"></div>
-                    <div className="head__face-mouth"></div>
-                  </div>
-
-                  <span className="error__head-span">
-                    Вход не вышел
-                  </span>
-                </div>
-                <div className="error__message">
-                  <span className="error__message-span">
-                    {errorMessage}
-                  </span>
-                </div>
+              <div className="error__message">
+                <span className="error__message-span">
+                  {errorMessage}
+                </span>
               </div>
             </div>
-            <div className="form__inputs">
-              <InputLabel onChange={this.onChange} error={loginError} value={login} name="login" title="Логин" required />
-              <InputLabel onChange={this.onChange} value={sublogin} name="sublogin" title="Сублогин" />
-              <InputLabel onChange={this.onChange} error={passwordError} value={password} name="password" title="Пароль" type="password" required />
-            </div>
-            <div className="form__submit">
-              <button type="submit" className="form__submit-btn">
-                <span className={spanButtonClass}>Войти</span>
-                <img alt="spinner" className={loaderButtonClass} src={Spinner} />
-              </button>
-            </div>
-          </form>
-        </div>
-        <a href="https://github.com/Jekyns/sendsay-exercise" className="wrapper__link">
-          <span href="https://github.com/Jekyns/sendsay-exercise" className="wrapper__link-visible">@Jekyns</span>
-          <span className="wrapper__link-typing">/sendsay-exercise</span>
-        </a>
+          </div>
+          <div className="form__inputs">
+            <InputLabel onChange={onChange} error={loginError} value={login} name="login" title="Логин" required />
+            <InputLabel onChange={onChange} value={sublogin} name="sublogin" title="Сублогин" />
+            <InputLabel onChange={onChange} error={passwordError} value={password} name="password" title="Пароль" type="password" required />
+          </div>
+          <div className="form__submit">
+            <button type="submit" className="form__submit-btn">
+              <span className={spanButtonClass}>Войти</span>
+              <img alt="spinner" className={loaderButtonClass} src={Spinner} />
+            </button>
+          </div>
+        </form>
       </div>
-    );
-  }
+      <a href="https://github.com/Jekyns/sendsay-exercise" className="wrapper__link">
+        <span href="https://github.com/Jekyns/sendsay-exercise" className="wrapper__link-visible">@Jekyns</span>
+        <span className="wrapper__link-typing">/sendsay-exercise</span>
+      </a>
+    </div>
+  );
 }
 
 const mapDispatchToProps = {

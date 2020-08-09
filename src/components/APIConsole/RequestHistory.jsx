@@ -4,19 +4,12 @@ import { connect } from 'react-redux';
 import RequestTab from './RequestTab';
 import './style.css';
 
-class RequestHistory extends React.PureComponent {
-  constructor(props) {
-    super(props);
-    this.requestHistoryRef = React.createRef();
-  }
+function RequestHistory(props) {
+  const requestHistoryRef = React.createRef();
+  const [historyPosition, setHistoryPosition] = React.useState(0);
 
-  state = {
-    historyPosition: 0,
-  };
-
-  scrollRequestHistory = (e) => {
-    const { historyPosition } = this.state;
-    const clientWidth = this.requestHistoryRef.current.clientWidth;
+  const scrollRequestHistory = (e) => {
+    const clientWidth = requestHistoryRef.current.clientWidth;
     if (e.deltaY > 0) {
       if (window.innerWidth + historyPosition >= clientWidth) {
         return null;
@@ -25,19 +18,19 @@ class RequestHistory extends React.PureComponent {
       return null;
     }
     if ((window.innerWidth + historyPosition + e.deltaY * 0.5) > clientWidth) {
-      this.setState({ historyPosition: clientWidth - window.innerWidth });
+      setHistoryPosition(clientWidth - window.innerWidth );
       return null;
     }
     if ((historyPosition + e.deltaY * 0.5) < 0) {
-      this.setState({ historyPosition: 0 });
+      setHistoryPosition(0);
       return null;
     }
-    this.setState({ historyPosition: historyPosition + e.deltaY * 0.5 });//  e.deltaY=-100 or 100
+    setHistoryPosition(historyPosition + e.deltaY * 0.5);//  e.deltaY=-100 or 100
     return null;
   }
 
-  showRequestTabs = () => {
-    const { requests, tabExecute, tabDelete } = this.props;
+  const showRequestTabs = () => {
+    const { requests, tabExecute, tabDelete } = props;
     const tabs = [];
     requests.forEach(request => {
       tabs.push(
@@ -47,29 +40,28 @@ class RequestHistory extends React.PureComponent {
           success={request.success}
           tabExecute={tabExecute}
           tabDelete={tabDelete}
+          key={request.actionName}
         />
       );
     });
     return tabs;
   }
 
-  render() {
-    const { hide, clearHistory } = this.props;
-    const { historyPosition } = this.state;
-    const moveHistory = {
-      right: `${historyPosition}px`
-    };
-    return (
-      <div className={`history ${hide ? 'hide-history' : ''}`} onWheel={this.scrollRequestHistory}>
-        <div className="history__requests" style={moveHistory} ref={this.requestHistoryRef}>
-          {this.showRequestTabs()}
-        </div>
-        <div className="history__clear" onClick={clearHistory}>
+  const { hide, clearHistory } = props;
+  const moveHistory = {
+    right: `${historyPosition}px`
+  };
 
-        </div>
+  return (
+    <div className={`history ${hide ? 'hide-history' : ''}`} onWheel={scrollRequestHistory}>
+      <div className="history__requests" style={moveHistory} ref={requestHistoryRef}>
+        {showRequestTabs()}
       </div>
-    );
-  }
+      <div className="history__clear" onClick={clearHistory}>
+
+      </div>
+    </div>
+  );
 }
 
 const mapStateToProps = (state) => {
@@ -88,7 +80,7 @@ export default enchancer(RequestHistory);
 RequestHistory.propTypes = {
   hide: PropTypes.bool.isRequired,
   clearHistory: PropTypes.func,
-  requests: PropTypes.arrayOf(PropTypes.func),
+  requests: PropTypes.arrayOf(PropTypes.object),
   tabExecute: PropTypes.func.isRequired,
   tabDelete: PropTypes.func.isRequired,
 };
