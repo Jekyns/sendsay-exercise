@@ -38,7 +38,7 @@ function LoginScreen(props) {
         setPasswordError(!validateField(/[^а-яА-Я]*/g, value));
         break;
       default:
-      break;
+        break;
     }
   }
 
@@ -52,35 +52,35 @@ function LoginScreen(props) {
       setPasswordError(true);
       return null;
     }
-    
-    if(loginError || passwordError){
+
+    if (loginError || passwordError) {
       return null;
     }
 
     if (login && password) {
       setSubmittingForm(true);
       const sendsay = new Sendsay();
-      sendsay.request({
-        action: 'login',
-        login,
-        sublogin,
-        passwd: password,
-      }).then((res) => {
-        const user = {
-          login: res.login,
-          sublogin: res.sublogin,
-          session: res.session,
-        };
+      try {
+        const user = await sendsay.request({
+          action: 'login',
+          login,
+          sublogin,
+          passwd: password,
+        });
         cookie.save('sendsay_session', user.session);
-        props.setUser({ ...user });
-        setSubmittingForm(false);
-      }).catch((err) => {
+        props.setUser({
+          login: user.login,
+          sublogin: user.sublogin,
+          session: user.session,
+        });
+      }
+      catch (err) {
         const customErr = { ...err };
         delete customErr.request;
         setErrorMessage(JSON.stringify(customErr));
-        setSubmittingForm(false);
         setPassword('');
-      });
+      }
+      setSubmittingForm(false);
     }
   }
   const spanButtonClass = `submit__btn-span ${submittingForm ? 'hide-text' : null}`;

@@ -60,27 +60,27 @@ function APIConsole(props) {
     const sendsay = new Sendsay({});
     const requestBody = request || requestText;
     const requestJson = JSON.parse(requestBody);
-    sendsay.request({
-      session: cookie.load('sendsay_session'),
-      ...requestJson,
-    }).then((res) => {
+    try {
+      const serverResoponse = await sendsay.request({
+        session: cookie.load('sendsay_session'),
+        ...requestJson,
+      })
       props.addRequest({
         actionName: requestJson.action,
         requestJson: beautifyJson(requestBody),
         success: true,
       });
-      setRequestText(requestBody);
-      setResponseText(beautifyJson(JSON.stringify(res)));
-    }).catch((err) => {
+      setResponseText(beautifyJson(JSON.stringify(serverResoponse)));
+    } catch(err){
       props.addRequest({
         actionName: requestJson.action,
         requestJson: beautifyJson(requestBody),
         success: false,
       });
-      setRequestText(requestBody);
       setResponseText(beautifyJson(JSON.stringify(err)));
       setResponseError(true);
-    });
+    }
+    setRequestText(requestBody);
     return null;
   }
 
