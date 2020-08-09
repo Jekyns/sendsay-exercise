@@ -18,7 +18,7 @@ function RequestTab(props) {
           <div className={`tab__success-lamp ${success ? 'success' : 'failed'}`}></div>
         </div>
         <div className={`tab__title ${copiedText ? 'copied-show' : 'copied-hide'}`}>
-          <span className="tab__title-span">{actionName}</span>
+          <span className="tab__title-span" title={actionName}>{actionName}</span>
         </div>
         <div className="tab__dropdown-icon">
           <div className="tab__dropdown-dots"></div>
