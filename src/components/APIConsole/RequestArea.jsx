@@ -32,7 +32,7 @@ export default RequestArea;
 RequestArea.propTypes = {
   title: PropTypes.string.isRequired,
   name: PropTypes.string,
-  width: PropTypes.string,
+  width: PropTypes.number,
   error: PropTypes.bool.isRequired,
   onChange: PropTypes.func,
   moveSplitter: PropTypes.func,
